@@ -2,36 +2,36 @@
   {
     "id": "TC01",
     "type": "direct_query",
-    "question": "Chào bạn, bạn có thể giới thiệu quy chế học vụ cơ bản của Đại học VinUni không?",
-    "expected_behavior": "Chatbot trả lời trực tiếp từ System Prompt, không cần gọi bất kỳ Tool nào.",
+    "question": "Chỉ số P/E là gì và ý nghĩa của nó trong đầu tư chứng khoán?",
+    "expected_behavior": "Chatbot trả lời trực tiếp từ kiến thức nền tảng, không cần gọi bất kỳ Tool nào.",
     "complexity": "Low"
   },
   {
     "id": "TC02",
     "type": "single_tool_query",
-    "question": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
-    "expected_behavior": "Agent nhận diện nhu cầu tra cứu, tự động phát sinh Tool Call 'academic_query' với mã SV2026001.",
+    "question": "Tra cứu chỉ số tài chính hiện tại của mã cổ phiếu FPT.",
+    "expected_behavior": "Agent nhận diện nhu cầu tra cứu, tự động phát sinh Tool Call 'analyze_stock_ticker' với mã FPT.",
     "complexity": "Medium"
   },
   {
     "id": "TC03",
-    "type": "appointment_booking",
-    "question": "Tôi là sinh viên SV2026001, hãy đặt giúp tôi một lịch hẹn tư vấn học vụ với PGS.TS Nguyễn Văn A vào lúc 14:00 ngày 15/09/2026.",
-    "expected_behavior": "Agent tự động phát sinh Tool Call 'schedule_appointment' với đúng thời gian và thông tin sinh viên.",
+    "type": "action_execution",
+    "question": "Thực hiện lệnh mua cổ phiếu VCB với khối lượng 1000 cổ phiếu, giá mục tiêu 90000.",
+    "expected_behavior": "Agent tự động phát sinh Tool Call 'execute_trade_order' với đúng thông tin giao dịch.",
     "complexity": "Medium"
   },
   {
     "id": "TC04",
     "type": "multi_step_reasoning",
-    "question": "Tôi muốn đặt lịch hẹn tư vấn học vụ với cố vấn học tập của sinh viên SV2026001 vào lúc 09:00 ngày 16/09/2026. Hãy tra cứu xem cố vấn của sinh viên này là ai rồi đặt lịch giúp tôi.",
-    "expected_behavior": "Agent thực hiện chuỗi suy luận ReAct: Tra cứu cố vấn học tập của sinh viên trước, sau đó tiến hành đặt lịch hẹn.",
+    "question": "Kiểm tra giá mã FPT, nếu giá hiện tại dưới 100000 thì đặt lệnh mua 500 cổ, nếu không thì báo lại.",
+    "expected_behavior": "Agent thực hiện chuỗi suy luận ReAct: Tra cứu mã chứng khoán trước, so sánh điều kiện giá, sau đó mới gọi 'execute_trade_order' hoặc từ chối.",
     "complexity": "High"
   },
   {
     "id": "TC05",
     "type": "edge_case_handling",
-    "question": "Hãy tra cứu thông tin học vụ của sinh viên SV9999999.",
-    "expected_behavior": "Agent nhận kết quả NOT_FOUND từ Tool và đưa ra phản hồi lịch sự, chính xác không bịa đặt dữ liệu.",
+    "question": "Tra cứu mã cổ phiếu XYZ99.",
+    "expected_behavior": "Agent gọi Tool, nhận kết quả mã không tồn tại, và xử lý uyển chuyển bằng cách phản hồi lại cho người dùng.",
     "complexity": "Medium"
   }
 ]

@@ -37,34 +37,52 @@ class MockOfflineProvider(BaseLLMProvider):
     def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
         prompt_lower = prompt.lower()
         
-        # Mô phỏng nhận diện intent gọi Tool
-        if "sv9999999" in prompt_lower:
+        # Mô phỏng nhận diện intent gọi Tool cho nghiệp vụ chứng khoán
+        if "xyz99" in prompt_lower:
             return {
                 "type": "tool_call",
-                "tool_name": "academic_query",
-                "arguments": {"student_id": "SV9999999"},
-                "thought": "Người dùng tra cứu sinh viên SV9999999. Tôi sẽ gọi tool academic_query."
+                "tool_name": "analyze_stock_ticker",
+                "arguments": {"ticker": "XYZ99"},
+                "thought": "Người dùng tra cứu mã XYZ99. Tôi sẽ gọi tool analyze_stock_ticker."
             }
-        elif "sv2026001" in prompt_lower and ("đặt" in prompt_lower or "lịch" in prompt_lower):
-            dt_str = "09:00 16/09/2026" if "16/09" in prompt_lower else "14:00 15/09/2026"
+        elif "vcb" in prompt_lower and "mua" in prompt_lower and "1000" in prompt_lower:
             return {
                 "type": "tool_call",
-                "tool_name": "schedule_appointment",
-                "arguments": {"student_id": "SV2026001", "datetime_str": dt_str, "advisor_name": "PGS.TS Nguyễn Văn A"},
-                "thought": "Người dùng yêu cầu đặt lịch hẹn tư vấn cho sinh viên SV2026001. Tôi sẽ gọi tool schedule_appointment."
+                "tool_name": "execute_trade_order",
+                "arguments": {"ticker": "VCB", "action": "MUA", "volume": 1000, "target_price": 90000},
+                "thought": "Người dùng yêu cầu mua 1000 cổ phiếu VCB với giá 90000. Tôi sẽ gọi tool execute_trade_order."
             }
-        elif "sv2026001" in prompt_lower or "tra cứu" in prompt_lower:
+        elif "fpt" in prompt_lower and "mua" in prompt_lower and "500" in prompt_lower:
+            # Mô phỏng ReAct step 1: Tra cứu giá trước (TC04)
+            # Lưu ý: Trong mock này ta trả về analyze_stock_ticker, vòng lặp sau sẽ giả lập tiếp.
+            # Để đơn giản mock cho test suite, ta hardcode trả về execute_trade_order luôn nếu user ra lệnh đặt lệnh mua 500
+            # Nhưng để sát với multi-step, nên trả về analyze_stock_ticker nếu chưa có observation
+            if "quan sát" not in prompt_lower: # Một trick nhỏ nếu mock chưa có data
+                 return {
+                    "type": "tool_call",
+                    "tool_name": "analyze_stock_ticker",
+                    "arguments": {"ticker": "FPT"},
+                    "thought": "Người dùng yêu cầu kiểm tra giá FPT để quyết định mua. Tôi sẽ tra cứu giá bằng analyze_stock_ticker trước."
+                 }
+            else:
+                 return {
+                     "type": "tool_call",
+                     "tool_name": "execute_trade_order",
+                     "arguments": {"ticker": "FPT", "action": "MUA", "volume": 500, "target_price": 95000},
+                     "thought": "Giá FPT thỏa mãn điều kiện, tôi sẽ tiến hành gọi execute_trade_order."
+                 }
+        elif "fpt" in prompt_lower or "tra cứu" in prompt_lower:
             return {
                 "type": "tool_call",
-                "tool_name": "academic_query",
-                "arguments": {"student_id": "SV2026001"},
-                "thought": "Người dùng muốn tra cứu thông tin học vụ của sinh viên SV2026001. Tôi sẽ gọi tool academic_query."
+                "tool_name": "analyze_stock_ticker",
+                "arguments": {"ticker": "FPT"},
+                "thought": "Người dùng muốn tra cứu mã FPT. Tôi sẽ gọi tool analyze_stock_ticker."
             }
         else:
             return {
                 "type": "text",
-                "content": "[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-                "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool."
+                "content": "[Mock Agent Response]: Chỉ số P/E (Price-to-Earnings) đo lường mối quan hệ giữa giá thị trường của cổ phiếu và thu nhập trên mỗi cổ phiếu (EPS). Nó giúp nhà đầu tư đánh giá xem một cổ phiếu đang đắt hay rẻ so với lợi nhuận mà công ty tạo ra.",
+                "thought": "Câu hỏi chung về kiến thức tài chính, trả lời trực tiếp không cần gọi Tool."
             }
 
 
@@ -144,22 +162,29 @@ class GeminiProvider(BaseLLMProvider):
 
 
 class OpenAIProvider(BaseLLMProvider):
-    """OpenAI Provider (Native Tool Calling với OpenAI SDK)"""
-    def __init__(self, api_key: str = None, model: str = None):
+    """OpenAI / OpenRouter Provider (Native Tool Calling với OpenAI SDK)"""
+    def __init__(self, api_key: str = None, model: str = None, base_url: str = None):
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self.model_name = model or os.getenv("LLM_MODEL") or "gpt-4o-mini"
+        self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
+        
+        # Tự động phát hiện OpenRouter nếu key bắt đầu bằng 'sk-or-'
+        if self.api_key and self.api_key.startswith("sk-or-") and not self.base_url:
+            self.base_url = "https://openrouter.ai/api/v1"
+            
+        default_model = "google/gemini-2.5-flash" if self.base_url else "gpt-4o-mini"
+        self.model_name = model or os.getenv("LLM_MODEL") or default_model
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         if not self.api_key or self.api_key == "your_openai_api_key_here":
             return "[OpenAI Error]: Chưa cấu hình OPENAI_API_KEY trong file .env! Đang sử dụng chế độ Mock."
         try:
             from openai import OpenAI
-            client = OpenAI(api_key=self.api_key)
+            client = OpenAI(api_key=self.api_key, base_url=self.base_url) if self.base_url else OpenAI(api_key=self.api_key)
             messages = []
             if system_prompt:
                 messages.append({"role": "system", "content": system_prompt})
             messages.append({"role": "user", "content": prompt})
-            response = client.chat.completions.create(model=self.model_name, messages=messages)
+            response = client.chat.completions.create(model=self.model_name, messages=messages, max_tokens=1000)
             return response.choices[0].message.content or ""
         except Exception as e:
             return f"[OpenAI Exception]: {str(e)}"
@@ -171,7 +196,7 @@ class OpenAIProvider(BaseLLMProvider):
 
         try:
             from openai import OpenAI
-            client = OpenAI(api_key=self.api_key)
+            client = OpenAI(api_key=self.api_key, base_url=self.base_url) if self.base_url else OpenAI(api_key=self.api_key)
 
             tools = []
             for tool in tools_schema:
@@ -195,7 +220,8 @@ class OpenAIProvider(BaseLLMProvider):
                 model=self.model_name,
                 messages=messages,
                 tools=tools if tools else None,
-                tool_choice="auto" if tools else None
+                tool_choice="auto" if tools else None,
+                max_tokens=1000
             )
 
             msg = response.choices[0].message
@@ -206,16 +232,16 @@ class OpenAIProvider(BaseLLMProvider):
                     "type": "tool_call",
                     "tool_name": call.function.name,
                     "arguments": args,
-                    "thought": f"OpenAI quyết định gọi công cụ '{call.function.name}' với tham số: {json.dumps(args, ensure_ascii=False)}"
+                    "thought": f"LLM ({self.model_name}) quyết định gọi công cụ '{call.function.name}' với tham số: {json.dumps(args, ensure_ascii=False)}"
                 }
             else:
                 return {
                     "type": "text",
                     "content": msg.content or "",
-                    "thought": "OpenAI phản hồi trực tiếp bằng văn bản (không cần gọi công cụ)."
+                    "thought": f"LLM ({self.model_name}) phản hồi trực tiếp bằng văn bản (không cần gọi công cụ)."
                 }
         except Exception as e:
-            print(f"⚠️ [OpenAI API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
+            print(f"⚠️ [API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
             return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
 
 
@@ -229,7 +255,7 @@ def get_llm_provider() -> BaseLLMProvider:
             return GeminiProvider()
         else:
             return MockOfflineProvider()
-    elif provider_type == "openai":
+    elif provider_type in ["openai", "openrouter"]:
         key = os.getenv("OPENAI_API_KEY")
         if key and key != "your_openai_api_key_here":
             return OpenAIProvider()
@@ -239,3 +265,4 @@ def get_llm_provider() -> BaseLLMProvider:
         return MockOfflineProvider()
     else:
         return MockOfflineProvider()
+

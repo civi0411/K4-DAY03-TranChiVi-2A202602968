@@ -2,7 +2,7 @@
 
 > **Họ và Tên Học viên:** Trần Chí Vĩ  
 > **Mã Sinh Viên / Mã Học viên:** 2A202602968  
-> **Chủ đề Lựa chọn:** Gợi ý 1.1 — Trợ lý Học vụ & Tra cứu Lịch thi VinUni  
+> **Chủ đề Lựa chọn:** Đề tài Mở — Trợ lý Phân tích Đầu tư Chứng khoán & Đặt Lệnh  
 
 ---
 
@@ -10,11 +10,11 @@
 
 | Tiêu chí Đánh giá | Mức độ (1 - 5) | Giải trình chi tiết lý do chọn điểm |
 | :--- | :---: | :--- |
-| **1. Multi-step Reasoning** | 5 / 5 | Bài toán yêu cầu suy luận đa bước nối tiếp nhau: tra cứu thông tin học vụ và tên cố vấn trước, sau đó kết hợp dữ liệu thu được để thực hiện đặt lịch hẹn tư vấn. |
-| **2. Tool Interaction** | 5 / 5 | Hệ thống bắt buộc phải tương tác với các công cụ MCP bên ngoài: tool `academic_query` để truy xuất DB học vụ và tool `schedule_appointment` để cập nhật ghi nhận lịch hẹn. |
-| **3. Dynamic Decision** | 4 / 5 | Quyết định bước sau phụ thuộc động vào kết quả quan sát từ bước trước: kiểm tra thông tin sinh viên có tồn tại hay không, lấy chính xác cố vấn học tập tương ứng rồi mới đặt lịch. |
-| **4. Long Horizon Goal** | 4 / 5 | Agent phải giữ vững mục tiêu hoàn thành quy trình hỗ trợ học vụ xuyên suốt qua nhiều lượt suy luận và gọi công cụ cho tới khi phản hồi kết quả booking thành công cho sinh viên. |
-| **TỔNG ĐIỂM AGENTIC FIT** | **18 / 20** | *Nếu tổng điểm > 12/20: Bài toán rất phù hợp triển khai Agentic System.* |
+| **1. Multi-step Reasoning** | 5 / 5 | Agent phải tra cứu giá thị trường và chỉ số tài chính của mã cổ phiếu, phân tích tính khả thi, sau đó mới tiến hành đặt lệnh mua/bán. Sự phụ thuộc tuần tự giữa thông tin thị trường và quyết định tài chính rất rõ ràng. |
+| **2. Tool Interaction** | 5 / 5 | Hệ thống tương tác với 2 công cụ phức tạp của sàn giao dịch: `analyze_stock_ticker` (truy xuất dữ liệu thị trường theo thời gian thực) và `execute_trade_order` (tiến hành giao dịch và cập nhật danh mục). |
+| **3. Dynamic Decision** | 5 / 5 | Quyết định đặt lệnh phụ thuộc hoàn toàn vào kết quả quan sát (Dynamic): giá cổ phiếu vượt ngưỡng giới hạn hoặc P/E quá cao sẽ tự động thay đổi lời khuyên hoặc từ chối thực hiện giao dịch của người dùng. |
+| **4. Long Horizon Goal** | 5 / 5 | Agent duy trì mục tiêu hỗ trợ nhà đầu tư từ lúc hỏi thông tin, phân tích cho đến khi lệnh được xác nhận khớp thành công, đảm bảo không bị gián đoạn hay mất ngữ cảnh. |
+| **TỔNG ĐIỂM AGENTIC FIT** | **20 / 20** | *Tổng điểm 20/20: Bài toán có độ phức tạp hoàn hảo, rất phù hợp và tận dụng tối đa năng lực của Agentic System.* |
 
 ---
 
@@ -28,32 +28,31 @@ Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.js
 [
   {
     "step": 1,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Tra cứu chỉ số tài chính hiện tại của mã cổ phiếu FPT.",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "academic_query",
+    "tool_name": "analyze_stock_ticker",
     "arguments": {
-      "student_id": "SV2026001"
+      "ticker": "FPT"
     },
     "observation": {
       "status": "SUCCESS",
-      "student_id": "SV2026001",
+      "ticker": "FPT",
       "data": {
-        "full_name": "Nguyễn Văn An",
-        "class": "AI-K4",
-        "gpa": 3.85,
-        "email": "an.nv@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "PGS.TS Nguyễn Văn A"
+        "company_name": "Công ty Cổ phần FPT",
+        "current_price": 95000,
+        "pe_ratio": 15.2,
+        "eps": 6250,
+        "volume": 2500000
       }
     },
-    "latency_ms": 120.5
+    "latency_ms": 1313.34
   },
   {
     "step": 2,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Tra cứu chỉ số tài chính hiện tại của mã cổ phiếu FPT.",
     "action_type": "FINAL_ANSWER",
     "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Kết quả tra cứu cho sinh viên SV2026001 (Nguyễn Văn An): Lớp AI-K4, GPA: 3.85, Email: an.nv@vinuni.edu.vn, Trạng thái: Đang học, Cố vấn: PGS.TS Nguyễn Văn A.",
+    "output": "Kết quả xử lý: {\"company_name\": \"Công ty Cổ phần FPT\", \"current_price\": 95000, \"pe_ratio\": 15.2, \"eps\": 6250, \"volume\": 2500000}",
     "latency_ms": 10.0
   }
 ]
