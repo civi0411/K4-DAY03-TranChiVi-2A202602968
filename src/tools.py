@@ -1,5 +1,5 @@
 """
-🛠️ TOOL DEFINITIONS & EXECUTION BACKEND
+TOOL DEFINITIONS & EXECUTION BACKEND
 Mã nguồn chứa danh sách Tool Schemas (JSON Schema) và Execution Layer phục vụ cho MCP Server.
 """
 
@@ -123,11 +123,11 @@ def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
 
 if __name__ == "__main__":
     print("==========================================================")
-    print("🛠️ KIỂM THỬ ĐỘC LẬP TOOL DISPATCHER (src/tools.py)")
+    print("KIỂM THỬ ĐỘC LẬP TOOL DISPATCHER (src/tools.py)")
     print("==========================================================")
     
     test_analyze = dispatch_tool_call("analyze_stock_ticker", {"ticker": "FPT"})
-    print("✅ Test dispatch 'analyze_stock_ticker':")
+    print("Test dispatch 'analyze_stock_ticker':")
     print(f"   Response: {test_analyze}")
     
     test_trade = dispatch_tool_call("execute_trade_order", {
@@ -136,5 +136,5 @@ if __name__ == "__main__":
         "volume": 500,
         "target_price": 95000
     })
-    print("✅ Test dispatch 'execute_trade_order':")
+    print("Test dispatch 'execute_trade_order':")
     print(f"   Response: {test_trade}")

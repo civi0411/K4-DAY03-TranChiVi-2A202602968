@@ -1,5 +1,5 @@
 """
-🔌 MULTI-PROVIDER LLM ADAPTER (Google Gemini, OpenAI & Offline Mock)
+MULTI-PROVIDER LLM ADAPTER (Google Gemini, OpenAI & Offline Mock)
 Hỗ trợ Native Tool Calling và chuyển đổi linh hoạt qua biến môi trường LLM_PROVIDER.
 """
 
@@ -53,11 +53,7 @@ class MockOfflineProvider(BaseLLMProvider):
                 "thought": "Người dùng yêu cầu mua 1000 cổ phiếu VCB với giá 90000. Tôi sẽ gọi tool execute_trade_order."
             }
         elif "fpt" in prompt_lower and "mua" in prompt_lower and "500" in prompt_lower:
-            # Mô phỏng ReAct step 1: Tra cứu giá trước (TC04)
-            # Lưu ý: Trong mock này ta trả về analyze_stock_ticker, vòng lặp sau sẽ giả lập tiếp.
-            # Để đơn giản mock cho test suite, ta hardcode trả về execute_trade_order luôn nếu user ra lệnh đặt lệnh mua 500
-            # Nhưng để sát với multi-step, nên trả về analyze_stock_ticker nếu chưa có observation
-            if "quan sát" not in prompt_lower: # Một trick nhỏ nếu mock chưa có data
+            if "quan sát" not in prompt_lower:
                  return {
                     "type": "tool_call",
                     "tool_name": "analyze_stock_ticker",
@@ -106,7 +102,7 @@ class GeminiProvider(BaseLLMProvider):
 
     def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
         if not self.api_key or self.api_key == "your_gemini_api_key_here":
-            print("ℹ️ [Gemini Provider]: Chưa tìm thấy GEMINI_API_KEY hợp lệ. Tự động chuyển sang Mock Offline.")
+            print("[Gemini Provider]: Chưa tìm thấy GEMINI_API_KEY hợp lệ. Tự động chuyển sang Mock Offline.")
             return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
         
         try:
@@ -115,10 +111,8 @@ class GeminiProvider(BaseLLMProvider):
 
             client = genai.Client(api_key=self.api_key)
             
-            # Chuẩn hóa function declarations cho Gemini SDK
             function_declarations = []
             for tool in tools_schema:
-                # Bỏ qua các tool schema chưa được định nghĩa hoàn chỉnh
                 if not tool.get("name") or not tool.get("parameters"):
                     continue
                 function_declarations.append({
@@ -139,7 +133,6 @@ class GeminiProvider(BaseLLMProvider):
                 config=config
             )
 
-            # Kiểm tra xem Gemini có trả về Tool Call không
             if response.function_calls:
                 call = response.function_calls[0]
                 args = dict(call.args) if hasattr(call, 'args') and call.args else {}
@@ -157,7 +150,7 @@ class GeminiProvider(BaseLLMProvider):
                 }
 
         except Exception as e:
-            print(f"⚠️ [Gemini API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
+            print(f"[Gemini API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
             return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
 
 
@@ -167,7 +160,6 @@ class OpenAIProvider(BaseLLMProvider):
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
         
-        # Tự động phát hiện OpenRouter nếu key bắt đầu bằng 'sk-or-'
         if self.api_key and self.api_key.startswith("sk-or-") and not self.base_url:
             self.base_url = "https://openrouter.ai/api/v1"
             
@@ -191,7 +183,7 @@ class OpenAIProvider(BaseLLMProvider):
 
     def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
         if not self.api_key or self.api_key == "your_openai_api_key_here":
-            print("ℹ️ [OpenAI Provider]: Chưa tìm thấy OPENAI_API_KEY hợp lệ. Tự động chuyển sang Mock Offline.")
+            print("[OpenAI Provider]: Chưa tìm thấy OPENAI_API_KEY hợp lệ. Tự động chuyển sang Mock Offline.")
             return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
 
         try:
@@ -241,7 +233,7 @@ class OpenAIProvider(BaseLLMProvider):
                     "thought": f"LLM ({self.model_name}) phản hồi trực tiếp bằng văn bản (không cần gọi công cụ)."
                 }
         except Exception as e:
-            print(f"⚠️ [API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
+            print(f"[API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
             return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
 
 
@@ -265,4 +257,3 @@ def get_llm_provider() -> BaseLLMProvider:
         return MockOfflineProvider()
     else:
         return MockOfflineProvider()
-

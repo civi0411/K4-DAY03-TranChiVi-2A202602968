@@ -1,5 +1,5 @@
 """
-🔌 MODEL CONTEXT PROTOCOL (MCP) SERVER MODULE
+MODEL CONTEXT PROTOCOL (MCP) SERVER MODULE
 Mô phỏng kiến trúc MCP Server (Client-Server Architecture) cung cấp công cụ chuẩn hóa.
 """
 
@@ -31,9 +31,6 @@ class MCPStockServer:
         [TASK 2.1] HỌC VIÊN HOÀN THIỆN HÀM THỰC THI TOOL TRÊN MCP SERVER
         Thực thi request gọi Tool theo chuẩn MCP JSON-RPC
         """
-        # --------------------------------------------------------------------------
-        # TODO 2.1: HỌC VIÊN HOÀN THIỆN HÀM GỌI TOOL CHUẨN MCP JSON-RPC
-        # --------------------------------------------------------------------------
         res_str = dispatch_tool_call(tool_name, arguments)
         try:
             content = json.loads(res_str)
@@ -50,25 +47,23 @@ class MCPStockServer:
 
 if __name__ == "__main__":
     print("==========================================================")
-    print("🔌 KIỂM THỬ ĐỘC LẬP MCP SERVER (ai-stock-broker-mcp-server)")
+    print("KIỂM THỬ ĐỘC LẬP MCP SERVER (ai-stock-broker-mcp-server)")
     print("==========================================================")
     
     server = MCPStockServer()
     tools = server.list_tools()
-    print(f"✅ Khởi tạo thành công MCP Server: {server.server_name} (Version: {server.version})")
-    print(f"📦 Số lượng Tools công bố: {len(tools)}")
+    print(f"Khởi tạo thành công MCP Server: {server.server_name} (Version: {server.version})")
+    print(f"Số lượng Tools công bố: {len(tools)}")
     
-    # Kiểm tra trạng thái TODO 1.2 (Tool Schema)
     sched_tool = next((t for t in tools if t.get("name") == "execute_trade_order"), None)
     if sched_tool and not sched_tool.get("parameters", {}).get("properties"):
-        print("⏳ [TODO 1.2]: Tool 'execute_trade_order' chưa được định nghĩa properties trong 'src/tools.py'.")
+        print("[TODO 1.2]: Tool 'execute_trade_order' chưa được định nghĩa properties trong 'src/tools.py'.")
     else:
-        print("✅ [TODO 1.2]: Tool 'execute_trade_order' đã có schema đầy đủ.")
+        print("[TODO 1.2]: Tool 'execute_trade_order' đã có schema đầy đủ.")
 
-    # Kiểm tra trạng thái TODO 2.1 (call_tool)
     test_result = server.call_tool("analyze_stock_ticker", {"ticker": "FPT"})
     if not test_result:
-        print("⏳ [TODO 2.1]: Hàm call_tool() đang trả về rỗng. Học viên hãy hoàn thiện TODO 2.1 trong 'src/mcp_server.py'!")
+        print("[TODO 2.1]: Hàm call_tool() đang trả về rỗng. Học viên hãy hoàn thiện TODO 2.1 trong 'src/mcp_server.py'!")
     else:
-        print(f"✅ [TODO 2.1]: Test dispatch tool 'analyze_stock_ticker' thành công:")
+        print(f"[TODO 2.1]: Test dispatch tool 'analyze_stock_ticker' thành công:")
         print(f"   Phản hồi JSON-RPC: {json.dumps(test_result, ensure_ascii=False)}")
