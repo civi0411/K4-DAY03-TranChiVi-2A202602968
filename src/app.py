@@ -162,7 +162,7 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPStockServer) -> li
 
 if __name__ == "__main__":
     print("==========================================================")
-    print("VINUNI AI COURSE - DAY 03 LAB: CHATBOT VS REACT AGENT")
+    print("DAY 03 LAB: AI STOCK BROKER REACT AGENT")
     print("==========================================================")
     
     provider = get_llm_provider()
