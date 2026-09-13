@@ -1,16 +1,57 @@
-# Python Virtual Environment & Caches
+# ==============================================================================
+# BÀI LAB 3: .GITIGNORE CHUẨN CHO DỰ ÁN PUBLIC
+# Chặn hoàn toàn các file nhạy cảm và file rác sinh ra trong quá trình dev.
+# ==============================================================================
+
+# 1. Environment Variables & API Keys (TUYỆT ĐỐI BẢO MẬT)
+.env
+.env.*
+!.env.example
+
+# 2. Python Virtual Environment & Caches
 .venv/
 venv/
+env/
 ENV/
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 
-# Environment Variables & Keys
-.env
+# 3. Build & Distribution
+build/
+dist/
+*.egg-info/
+.eggs/
 
-# System & IDE files
+# 4. Logs & Databases
+*.log
+*.sqlite3
+*.db
+
+# 5. MacOS Specific (System Files)
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# 6. Windows Specific (System Files)
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+
+# 7. IDE & Editor (VSCode, PyCharm, v.v.)
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# ==============================================================================
+# LƯU Ý DÀNH CHO HỌC VIÊN:
+# - KHÔNG chặn thư mục `docs/` vì file báo cáo `.md` và `.json` cần được nộp.
+# - KHÔNG chặn thư mục `config/` vì `test_cases.json` cần được nộp.
+# ==============================================================================

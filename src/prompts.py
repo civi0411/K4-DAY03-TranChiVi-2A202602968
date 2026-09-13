@@ -1,5 +1,5 @@
 """
-🧠 PROMPTS & INSTRUCTION SPECIFICATION
+ PROMPTS & INSTRUCTION SPECIFICATION
 Định nghĩa System Prompts cho Chatbot Baseline (Cấp 2) và ReAct Agent System (Cấp 3).
 """
 

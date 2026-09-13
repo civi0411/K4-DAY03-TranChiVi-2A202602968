@@ -1,8 +1,8 @@
 # BÁO CÁO THU HOẠCH NGHIỆM THU BÀI LAB 3 (BƯỚC 3 — SUBMISSION ARTIFACT)
 
-> **Họ và Tên Học viên:** Trần Chí Vĩ  
-> **Mã Sinh Viên / Mã Học viên:** 2A202602968  
-> **Chủ đề Lựa chọn:** Đề tài Mở — Trợ lý Phân tích Đầu tư Chứng khoán & Đặt Lệnh  
+> **Họ và Tên Học viên:** Trần Chí Vĩ 
+> **Mã Sinh Viên / Mã Học viên:** 2A202602968 
+> **Chủ đề Lựa chọn:** Đề tài Mở — Trợ lý Phân tích Đầu tư Chứng khoán & Đặt Lệnh 
 
 ---
 
@@ -26,35 +26,35 @@ Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.js
 
 ```json
 [
-  {
-    "step": 1,
-    "query": "Tra cứu chỉ số tài chính hiện tại của mã cổ phiếu FPT.",
-    "action_type": "TOOL_EXECUTION",
-    "tool_name": "analyze_stock_ticker",
-    "arguments": {
-      "ticker": "FPT"
-    },
-    "observation": {
-      "status": "SUCCESS",
-      "ticker": "FPT",
-      "data": {
-        "company_name": "Công ty Cổ phần FPT",
-        "current_price": 95000,
-        "pe_ratio": 15.2,
-        "eps": 6250,
-        "volume": 2500000
-      }
-    },
-    "latency_ms": 1313.34
+ {
+  "step": 1,
+  "query": "Tra cứu chỉ số tài chính hiện tại của mã cổ phiếu FPT.",
+  "action_type": "TOOL_EXECUTION",
+  "tool_name": "analyze_stock_ticker",
+  "arguments": {
+   "ticker": "FPT"
   },
-  {
-    "step": 2,
-    "query": "Tra cứu chỉ số tài chính hiện tại của mã cổ phiếu FPT.",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Kết quả xử lý: {\"company_name\": \"Công ty Cổ phần FPT\", \"current_price\": 95000, \"pe_ratio\": 15.2, \"eps\": 6250, \"volume\": 2500000}",
-    "latency_ms": 10.0
-  }
+  "observation": {
+   "status": "SUCCESS",
+   "ticker": "FPT",
+   "data": {
+    "company_name": "Công ty Cổ phần FPT",
+    "current_price": 95000,
+    "pe_ratio": 15.2,
+    "eps": 6250,
+    "volume": 2500000
+   }
+  },
+  "latency_ms": 1313.34
+ },
+ {
+  "step": 2,
+  "query": "Tra cứu chỉ số tài chính hiện tại của mã cổ phiếu FPT.",
+  "action_type": "FINAL_ANSWER",
+  "thought": "Tổng hợp kết quả từ MCP Server thành công.",
+  "output": "Kết quả xử lý: {\"company_name\": \"Công ty Cổ phần FPT\", \"current_price\": 95000, \"pe_ratio\": 15.2, \"eps\": 6250, \"volume\": 2500000}",
+  "latency_ms": 10.0
+ }
 ]
 ```
 
