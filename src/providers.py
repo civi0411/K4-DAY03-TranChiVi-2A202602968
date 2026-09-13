@@ -38,11 +38,19 @@ class MockOfflineProvider(BaseLLMProvider):
         prompt_lower = prompt.lower()
         
         # Mô phỏng nhận diện intent gọi Tool
-        if "sv2026001" in prompt_lower and "đặt lịch" in prompt_lower:
+        if "sv9999999" in prompt_lower:
+            return {
+                "type": "tool_call",
+                "tool_name": "academic_query",
+                "arguments": {"student_id": "SV9999999"},
+                "thought": "Người dùng tra cứu sinh viên SV9999999. Tôi sẽ gọi tool academic_query."
+            }
+        elif "sv2026001" in prompt_lower and ("đặt" in prompt_lower or "lịch" in prompt_lower):
+            dt_str = "09:00 16/09/2026" if "16/09" in prompt_lower else "14:00 15/09/2026"
             return {
                 "type": "tool_call",
                 "tool_name": "schedule_appointment",
-                "arguments": {"student_id": "SV2026001", "datetime_str": "14:00 15/09/2026", "advisor_name": "PGS.TS Nguyễn Văn A"},
+                "arguments": {"student_id": "SV2026001", "datetime_str": dt_str, "advisor_name": "PGS.TS Nguyễn Văn A"},
                 "thought": "Người dùng yêu cầu đặt lịch hẹn tư vấn cho sinh viên SV2026001. Tôi sẽ gọi tool schedule_appointment."
             }
         elif "sv2026001" in prompt_lower or "tra cứu" in prompt_lower:
@@ -55,7 +63,7 @@ class MockOfflineProvider(BaseLLMProvider):
         else:
             return {
                 "type": "text",
-                "content": f"[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
+                "content": "[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
                 "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool."
             }
 

@@ -43,9 +43,20 @@ TOOLS_SCHEMA = [
         "parameters": {
             "type": "object",
             "properties": {
-                # TODO 1.2: Khai báo các thuộc tính tham số cho Tool tại đây...
+                "student_id": {
+                    "type": "string",
+                    "description": "Mã sinh viên cần đặt lịch (ví dụ: 'SV2026001')"
+                },
+                "datetime_str": {
+                    "type": "string",
+                    "description": "Thời gian hẹn (ví dụ: '14:00 15/09/2026')"
+                },
+                "advisor_name": {
+                    "type": "string",
+                    "description": "Tên cố vấn học tập (ví dụ: 'PGS.TS Nguyễn Văn A')"
+                }
             },
-            "required": [] # TODO 1.2: Khai báo danh sách các trường bắt buộc tại đây...
+            "required": ["student_id", "datetime_str", "advisor_name"]
         }
     }
 ]
@@ -116,3 +127,22 @@ def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
         except Exception as e:
             return json.dumps({"status": "EXECUTION_ERROR", "error": str(e)}, ensure_ascii=False)
     return json.dumps({"status": "UNKNOWN_TOOL", "error": f"Tool '{tool_name}' không tồn tại!"}, ensure_ascii=False)
+
+
+if __name__ == "__main__":
+    print("==========================================================")
+    print("🛠️ KIỂM THỬ ĐỘC LẬP TOOL DISPATCHER (src/tools.py)")
+    print("==========================================================")
+    
+    test_academic = dispatch_tool_call("academic_query", {"student_id": "SV2026001"})
+    print("✅ Test dispatch 'academic_query':")
+    print(f"   Response: {test_academic}")
+    
+    test_schedule = dispatch_tool_call("schedule_appointment", {
+        "student_id": "SV2026001",
+        "datetime_str": "14:00 15/09/2026",
+        "advisor_name": "PGS.TS Nguyễn Văn A"
+    })
+    print("✅ Test dispatch 'schedule_appointment':")
+    print(f"   Response: {test_schedule}")
+
